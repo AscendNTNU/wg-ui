@@ -127,7 +127,7 @@ server {
 
    
   location / {
-    if ($host = vpn.ascendntnu.no) {
+    if ($host = server-name) {
       return 301 https://$host$request_uri;
     }
   }
