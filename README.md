@@ -104,7 +104,7 @@ Edit the `/etc/nginx/sites-enables/default` or create a new config with these se
 server {
   listen [::]:443 ssl;
   listen 443 ssl;
-	server_name server-name;
+  server_name server-name;
   ssl on;
   ssl_certificate ssl/ssl_certificate.cer
   ssl_certificate_key ssl/ssl_key.key;
@@ -125,7 +125,6 @@ server {
   listen [::]:80;
   server_name server-name;
 
-   
   location / {
     if ($host = server-name) {
       return 301 https://$host$request_uri;
