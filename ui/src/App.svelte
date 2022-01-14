@@ -14,7 +14,7 @@
   import Cookie from "cookie-universal";
   const cookies = Cookie();
   export let user = cookies.get("wguser", { fromRes: true}) || "anonymous";
-
+  export let username = cookies.get("username", { fromRes: true}) || user;
   export let url = "";
 </script>
 
@@ -38,14 +38,14 @@ footer {
 
   <Router url="{url}">
 
-    <Nav user="{user}" />
+    <Nav username="{username}" />
 
     <main role="main" class="container">
       <div>
         <Route path="client/:clientId" component="{EditClient}" />
         <Route path="newclient/" component="{NewClient}" />
         <Route path="about" component="{About}" />
-        <Route path="/"><Clients user="{user}" /></Route>
+        <Route path="/"><Clients user="{user}" username="{username}" /></Route>
       </div>
     </main>
 

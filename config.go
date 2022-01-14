@@ -87,12 +87,12 @@ func (cfg *ServerConfig) Write() error {
 }
 
 // GetUserConfig returns a UserConfig for a specific user
-func (cfg *ServerConfig) GetUserConfig(user string) *UserConfig {
+func (cfg *ServerConfig) GetUserConfig(user string, username string) *UserConfig {
 	c, ok := cfg.Users[user]
 	if !ok {
 		log.WithField("user", user).Info("No such user. Creating one.")
 		c = &UserConfig{
-			Name:    user,
+			Name:    username,
 			Clients: make(map[string]*ClientConfig),
 		}
 		cfg.Users[user] = c

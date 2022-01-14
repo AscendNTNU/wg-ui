@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import Client from './Client.svelte';
   import { link,navigate } from "svelte-routing";
-
+  export let username;
   export let user;
 
   let clientsUrl = "/api/v1/users/" + user + "/clients";
@@ -66,7 +66,7 @@ padding: 0;
 <div class="content">
   <div class="row">
     <div class="col">
-      <h2 class="mdc-typography--headline2">My VPN Clients<small class="mdc-typography--headline5">({user})</small></h2>
+      <h2 class="mdc-typography--headline2">My VPN Clients<small class="mdc-typography--headline5">({username})</small></h2>
     </div>
     <div class="col help">
       <h3>Instructions</h3>

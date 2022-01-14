@@ -452,6 +452,12 @@ func (s *Server) userFromHeader(handler http.Handler) http.Handler {
 			Value: user,
 			Path:  "/",
 		}
+		cookie2 := http.Cookie{
+			Name:  "username",
+			Value: r.Header.Get("X-Forwarded-Email"),
+			Path:  "/",
+		}
+		http.SetCookie(w, &cookie2)
 		http.SetCookie(w, &cookie)
 
 		ctx := context.WithValue(r.Context(), key, user)
@@ -682,7 +688,7 @@ func (s *Server) CreateClient(w http.ResponseWriter, r *http.Request, ps httprou
 	user := r.Context().Value(key).(string)
 	log.WithField("user", user).Debug("CreateClient")
 
-	c := s.Config.GetUserConfig(user)
+	c := s.Config.GetUserConfig(user, r.Header.Get("X-Forwarded-Email"))
 	log.Debugf("user config: %#v", c)
 
 	if *maxNumberClientConfig > 0 {

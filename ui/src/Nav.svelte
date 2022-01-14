@@ -4,8 +4,8 @@
   import About from "./About.svelte";
   import Clients from "./Clients.svelte";
   import NavLink from "./NavLink.svelte";
-
-  export let user;
+  import Button, {Label} from '@smui/button';
+  export let username;
 </script>
 
 <style>
@@ -22,7 +22,7 @@
       <Title>WireGuard VPN</Title>
     </Section>
     <Section align="end" toolbar>
-      <small class="user">Logged in as {user}</small>
+      <Button href="/oauth2/sign_out"><Label>Sign Out</Label></Button>
     </Section>
   </Row>
 </TopAppBar>
