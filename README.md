@@ -99,7 +99,7 @@ sudo ./bin/wireguard-ui --log-level=debug --dev-ui-server http://localhost:5000
 
 Note: This example is running Wireguard-ui on port 8080.
 
-Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the ssl certificate and key are both located in `/etc/nginx`:
+Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the SSL certificate and key, are both located in `/etc/nginx/ssl`:
 ```
 server {
   listen [::]:443 ssl;
