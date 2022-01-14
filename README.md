@@ -152,7 +152,6 @@ email_domains = [
 client_id = "google-client-id"
 client_secret = "google-client-secret"
 
-pass_basic_auth = true
 pass_user_headers = true
 
 
