@@ -13,18 +13,10 @@ Current stable release: [v1.3.0](https://github.com/EmbarkStudios/wg-ui/releases
  * Optional multi-user support behind an authenticating proxy
  * Zero external dependencies - just a single binary using the wireguard kernel module
  * Binary and container deployment
+ * This Ascend version also has a sign out button :D
+ * Instead of showing the Google ID, your company email is shown
 
 ![Screenshot](wireguard-ui.png)
-
-## Running
-
-The easiest way to run wg-ui is using the container image. To test it, run:
-
-```docker run --rm -it --privileged --entrypoint "/wireguard-ui" -v /tmp/wireguard-ui:/data -p 8080:8080 embarkstudios/wireguard-ui:latest --data-dir=/data --log-level=debug```
-
-When running in production, we recommend using the latest release as opposed to `latest`.
-
-Important to know is that you need to have WireGuard installed on the machine in order for this to work, as this is 'just' a UI to manage WireGuard configs. 
 
 ### Configuration
 
@@ -32,36 +24,8 @@ You can configure wg-ui using commandline flags or environment variables.
 To see all available flags run:
 
 ```
-docker run --rm -it embarkstudios/wireguard-ui:latest -h
 ./wireguard-ui -h
 ```
-
-You can alternatively specify each flag through an environment variable of the form `WIREGUARD_UI_<FLAG_NAME>`, where `<FLAG_NAME>` is replaced with the flag name transformed to `CONSTANT_CASE`, e.g.
-
-```docker run --rm -it embarkstudios/wireguard-ui:latest --log-level=debug```
-
-and
-
-```docker run --rm -it -e WIREGUARD_UI_LOG_LEVEL=debug embarkstudios/wireguard-ui:latest```
-
-are the same.
-
-## Docker images
-
-There are two ways to run wg-ui today, you can run it with kernel module installed on your host which is the best way to do it if you want performance.  
-
-```
-docker pull embarkstudios/wireguard-ui:latest
-```
-
-If you however do not have the possibility or interest in having kernel module loaded on your host, there is now a solution for that using a docker image based on wireguard-go. Keep in mind that this runs in userspace and not in kernel module.  
-
-```
-docker pull embarkstudios/wireguard-ui:userspace
-```
-
-Both images are built for `linux/amd64`, `linux/arm64` and `linux/arm/v7`. If you would need it for any other platform you can build wg-ui binaries with help from the documentation.  
-
 
 ## Install without Docker
 
@@ -69,12 +33,10 @@ You need to have WireGuard installed on the machine running `wg-ui`.
 
 Unless you use the userspace version with docker you're required to have WireGuard installed on your host machine.  
 
-A few installation guides:  
+Ubuntu installation guide:
 [Ubuntu 20.04 LTS](https://www.cyberciti.biz/faq/ubuntu-20-04-set-up-wireguard-vpn-server/)  
-[CentOS 8](https://www.cyberciti.biz/faq/centos-8-set-up-wireguard-vpn-server/)  
-[Debian 10](https://www.cyberciti.biz/faq/debian-10-set-up-wireguard-vpn-server/)  
 
-### Go installation (Debian)
+### Go installation 
 Install latest version of Go from (https://golang.org/dl/)
 
 ```
@@ -90,14 +52,6 @@ export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 export GOPATH=$HOME/go
 ```
 
-### Install LTS version of nodejs for frontend.
-
-```
-sudo apt-get install curl software-properties-common
-curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-sudo apt-get install nodejs
-```
-
 ### Fetch wg-ui
 
 ```
@@ -110,15 +64,6 @@ git clone https://github.com/EmbarkStudios/wg-ui.git && cd wg-ui
 make build
 ```
 
-### Crosscompiling
-
-```
-make build-amd64
-```
-
-```
-make build-armv5
-```
 
 ```
 make build-armv6
@@ -149,6 +94,76 @@ npm run --prefix=ui dev
 make build
 sudo ./bin/wireguard-ui --log-level=debug --dev-ui-server http://localhost:5000
 ```
+
+## Setting up Nginx as reverse proxy, and oauth2-proxy as authenticator with Google as provider
+
+Note: This example is running Wireguard-ui on port 8080.
+
+Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the ssl certificate and key are both located in `/etc/nginx`:
+```
+server {
+  listen [::]:443 ssl;
+  listen 443 ssl;
+	server_name server-name;
+  ssl on;
+  ssl_certificate ssl/ssl_certificate.cer
+  ssl_certificate_key ssl/ssl_key.key;
+
+  location / {
+     proxy_pass http://127.0.0.1:4180;
+     proxy_set_header Host $host;
+     proxy_set_header X-Real-IP $remote_addr;
+     proxy_set_header X-Scheme $scheme;
+     proxy_connect_timeout 1;
+     proxy_send_timeout 30;
+     proxy_read_timeout 30;
+  }
+}
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name server-name;
+
+   
+  location / {
+    if ($host = vpn.ascendntnu.no) {
+      return 301 https://$host$request_uri;
+    }
+  }
+}
+```
+To set up [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy), you have to install the latest version from their GitHub.
+Then follow this [guide](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider#google-auth-provider) to get your client ID and secret from Google.
+After you have installed it, create a config (for example `/etc/oauth2-proxy.cfg`):
+
+```
+prompt = "select_account"
+provider = "google"
+
+
+redirect_url = "https://cp.example.com/oauth2/callback"
+reverse_proxy = true
+
+email_domains = [
+      "yourcompany.com"
+]
+
+client_id = "google-client-id"
+client_secret = "google-client-secret"
+
+pass_basic_auth = true
+pass_user_headers = true
+
+
+cookie_name = "_oauth2_proxy"
+cookie_secret = "cookie-seed"
+cookie_expire = "1h"
+upstreams = "http://127.0.0.1:8080/"
+```
+I recommend checking out the official oauth2-proxy [documentation](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview) for more settings and configs. It also shows how you can generate your cookie seed. 
+
+To run oauth2-proxy, just run `oauth2-proxy --config=/etc/oauth2-proxy.cfg`.
 
 ## Contributing
 
