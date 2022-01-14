@@ -97,7 +97,9 @@ sudo ./bin/wireguard-ui --log-level=debug --dev-ui-server http://localhost:5000
 
 ## Setting up Nginx as reverse proxy, and oauth2-proxy as authenticator with Google as provider
 
-Note: This example is running Wireguard-ui on port 8080.
+Notes: 
+  - This example is running Wireguard-ui on port 8080.
+  - You need to have SSL (so get the certificate)
 
 Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the SSL certificate and key, are both located in `/etc/nginx/ssl`:
 ```
