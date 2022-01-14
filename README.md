@@ -101,7 +101,7 @@ Notes:
   - This example is running Wireguard-ui on port 8080.
   - You need to have SSL (so get the certificate)
 
-Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the SSL certificate and key, are both located in `/etc/nginx/ssl`:
+Edit the `/etc/nginx/sites-enables/default` or create a new config with these settings. Note: the SSL certificate and key, are both located in `/etc/nginx/ssl/`:
 ```
 server {
   listen [::]:443 ssl;
