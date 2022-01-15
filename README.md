@@ -95,6 +95,11 @@ make build
 sudo ./bin/wireguard-ui --log-level=debug --dev-ui-server http://localhost:5000
 ```
 
+### Running Wireguard
+
+In this project, we use the binary that is created by building the project (`make build`).
+Then run the binary with the flags that is outputed with the command `./wireguard-ui -h`
+
 ## Setting up Nginx as reverse proxy, and oauth2-proxy as authenticator with Google as provider
 
 Notes: 
@@ -165,6 +170,51 @@ I recommend checking out the official oauth2-proxy [documentation](https://oauth
 
 To run oauth2-proxy, just run `oauth2-proxy --config=/etc/oauth2-proxy.cfg`.
 
+
+### Creating service systemd file for the services
+
+Create the service files in `/etc/systemd/system/` folder
+```
+# Systemd service file for wg-ui and wg
+# Created by Shayan Alinejad
+[Unit]
+Description=wg-ui & wg daemon service
+After=syslog.target network.target
+
+[Service]
+ExecStart=location-of-wireguard-ui-binary-with-flags
+ExecReload=/bin/kill -HUP $MAINPID
+
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+```
+# Systemd service file for oauth2-proxy daemon
+#
+# Date: Feb 9, 2016
+# Author: Srdjan Grubor <sgnn7@sgnn7.org>
+
+[Unit]
+Description=oauth2-proxy daemon service
+After=syslog.target network.target
+
+[Service]
+# www-data group and user need to be created before using these lines
+User=www-data
+Group=www-data
+
+ExecStart=oauth2-proxy --config=/etc/oauth2-proxy.cfg
+ExecReload=/bin/kill -HUP $MAINPID
+
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
 ## Contributing
 
 We welcome community contributions to this project.
