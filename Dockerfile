@@ -1,3 +1,7 @@
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install net-tools
+CMD ["ifconfig"]
+
 FROM docker.io/node:12 AS ui
 WORKDIR /ui
 COPY ui/package.json ui/package-lock.json /ui/
@@ -17,3 +21,4 @@ RUN go install .
 FROM gcr.io/distroless/base
 COPY --from=build /go/bin/wireguard-ui /
 ENTRYPOINT [ "/wireguard-ui" ]
+
