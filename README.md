@@ -4,7 +4,6 @@
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 A basic, self-contained management service for [WireGuard](https://wireguard.com) with a self-serve web UI.  
-Current stable release: [v1.3.0](https://github.com/EmbarkStudios/wg-ui/releases/tag/v1.3.0)  
 
 ## Features
 
@@ -55,7 +54,7 @@ export GOPATH=$HOME/go
 ### Fetch wg-ui
 
 ```
-git clone https://github.com/EmbarkStudios/wg-ui.git && cd wg-ui
+git clone https://github.com/AscendNTNU/wg-ui.git && cd wg-ui
 ```
 
 ### Build binary with ui
